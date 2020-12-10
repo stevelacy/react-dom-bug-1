@@ -7812,10 +7812,9 @@ function didNotFindHydratableSuspenseInstance(parentType, parentProps, parentIns
   if ( parentProps[SUPPRESS_HYDRATION_WARNING$1] !== true) ;
 }
 
-var randomKey = Math.random().toString(36).slice(2);
-var internalInstanceKey = '__reactInternalInstance$' + randomKey;
-var internalEventHandlersKey = '__reactEventHandlers$' + randomKey;
-var internalContainerInstanceKey = '__reactContainere$' + randomKey;
+var internalContainerInstanceKey = '__reactContainere$'
+var internalInstanceKey = '__reactInternalInstance$';
+var internalEventHandlersKey = '__reactEventHandlers$';
 function precacheFiberNode(hostInst, node) {
   node[internalInstanceKey] = hostInst;
 }
@@ -20117,17 +20116,18 @@ function commitUnmount(finishedRoot, current, renderPriorityLevel) {
 
         safelyDetachRef(current);
 
-	  for (let prop in current.stateNode) {
-		if(prop.indexOf('__reactEventHandlers$') > -1) {
-			delete current.stateNode[prop];
-		}
-		if(prop.indexOf('__reactInternalInstance$') > -1) {
-			delete current.stateNode[prop];
-		}
-	  }
-
+		// HACK: detach fiber references from DOM
+        current.stateNode.__reactEventHandlers$ = null;
+        current.stateNode.__reactInternalInstance$ = null;
         return;
       }
+
+    case HostText: {
+      // HACK: detach fiber references from DOM
+      current.stateNode.__reactEventHandlers$ = null;
+      current.stateNode.__reactInternalInstance$ = null;
+      return;
+    }
 
     case HostPortal:
       {
@@ -20158,21 +20158,6 @@ function commitUnmount(finishedRoot, current, renderPriorityLevel) {
 
         return;
       }
-
-
-      case HostText:
-      {
-        for (var prop in current.stateNode) {
-          if (prop.indexOf('__reactEventHandlers$') > -1) {
-            delete current.stateNode[prop];
-          }
-          if (prop.indexOf('__reactInternalInstance$') > -1) {
-            delete current.stateNode[prop];
-          }
-        }
-        return;
-      }
-
   }
 }
 
