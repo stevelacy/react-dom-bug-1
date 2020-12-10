@@ -20116,6 +20116,16 @@ function commitUnmount(finishedRoot, current, renderPriorityLevel) {
       {
 
         safelyDetachRef(current);
+
+	  for (let prop in current.stateNode) {
+		if(prop.indexOf('__reactEventHandlers$') > -1) {
+			delete current.stateNode[prop];
+		}
+		if(prop.indexOf('__reactInternalInstance$') > -1) {
+			delete current.stateNode[prop];
+		}
+	  }
+
         return;
       }
 
@@ -20148,6 +20158,21 @@ function commitUnmount(finishedRoot, current, renderPriorityLevel) {
 
         return;
       }
+
+
+      case HostText:
+      {
+        for (var prop in current.stateNode) {
+          if (prop.indexOf('__reactEventHandlers$') > -1) {
+            delete current.stateNode[prop];
+          }
+          if (prop.indexOf('__reactInternalInstance$') > -1) {
+            delete current.stateNode[prop];
+          }
+        }
+        return;
+      }
+
   }
 }
 
@@ -24568,7 +24593,7 @@ function injectIntoDevTools(devToolsConfig) {
     // Enables DevTools to append owner stacks to error messages in DEV mode.
     getCurrentFiber:  function () {
       return current;
-    } 
+    }
   }));
 }
 var IsSomeRendererActing$1 = ReactSharedInternals.IsSomeRendererActing;
